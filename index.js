@@ -65,7 +65,8 @@ const connect = async () => {
                console.log("Connection Lost from Server, reconnecting...")
                connect()
             } else if (reason === DisconnectReason.connectionReplaced) {
-               console.log("Connection Replaced, Another New Session Opened, Please Close Current Session First") client.logout()
+               console.log("Connection Replaced, Another New Session Opened, Please Close Current Session First")
+               client.logout()
             } else if (reason === DisconnectReason.loggedOut) {
                console.log(`Device Logged Out, Please Scan Again And Run.`)
                client.logout()
