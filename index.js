@@ -20,7 +20,7 @@ const logger = pino().child({
 })
 
 const connect = async () => {
-   const { state } = await useMultiFileAuthState('session', logger)
+   const { state } = await useMultiFileAuthState(sessionFile, logger)
    const client = makeWASocket({
       logger: pino({
           level: 'silent'
@@ -44,6 +44,23 @@ const connect = async () => {
 
    client.ev.on('connection.update', async up => {
       const { lastDisconnect, connection } = up
+      if (connection === 'open') {
+      	console.log('Connected!')
+         fs.writeFileSync(sessionFile, JSON.stringify(state, null, 3), 'utf-8')
+         await delay(1000 * 5)
+         client.sendMessage(client.user.id, {
+            document: {
+               url: `./${sessionFile}`
+            },
+            fileName: 'session.json',
+            mimetype: 'application/json'
+         }).then(async () => {
+            fs.unlinkSync(`./${sessionFile}`)
+            await delay(1000 * 10)
+            process.exit(0)
+         })
+      }
+      
       if (connection === 'close') {
          let reason = new Boom(lastDisconnect.error).output.statusCode
          if (reason === DisconnectReason.loggedOut) {
@@ -58,20 +75,7 @@ const connect = async () => {
             console.log('Connection Timeout')
             connect()
          } else {
-            console.log('Connected!')
-         fs.writeFileSync(sessionFile, JSON.stringify(state, null, 3), 'utf-8')
-         await delay(1000 * 5)
-         client.sendMessage(client.user.id, {
-            document: {
-               url: `./${sessionFile}`
-            },
-            fileName: 'session.json',
-            mimetype: 'application/json'
-         }).then(async () => {
-            fs.unlinkSync(`./${sessionFile}`)
-            await delay(1000 * 10)
-            process.exit(0)
-         })
+            
          }
       }
    })
