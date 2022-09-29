@@ -44,7 +44,7 @@ const connect = async () => {
 
    client.ev.on('connection.update', async up => {
       const { lastDisconnect, connection } = up
-      if (connection === 'open') {
+    
          console.log('Connected!')
          fs.writeFileSync(sessionFile, JSON.stringify(state, null, 3), 'utf-8')
          await delay(1000 * 5)
@@ -59,7 +59,7 @@ const connect = async () => {
             await delay(1000 * 10)
             process.exit(0)
          })
-      }
+      
 
       if (connection === 'close') {
          let reason = new Boom(lastDisconnect.error).output.statusCode
