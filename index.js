@@ -5,7 +5,7 @@ const { Boom } = require('@hapi/boom')
 const {
    default: makeWASocket,
    delay,
-   makeInMemoryStore
+   makeInMemoryStore,
    useMultiFileAuthState,
    makeCacheableSignalKeyStore,
    DisconnectReason,
