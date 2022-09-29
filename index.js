@@ -5,6 +5,7 @@ const { Boom } = require('@hapi/boom')
 const {
    default: makeWASocket,
    delay,
+   makeInMemoryStore
    useMultiFileAuthState,
    makeCacheableSignalKeyStore,
    DisconnectReason,
@@ -35,6 +36,9 @@ const connect = async () => {
          return await store.loadMessage(client.decodeJid(key.remoteJid), key.id)
       }
    })
+   
+   client.store = makeInMemoryStore({ logger })
+   client.store.bind(client.ev)
 
    client.ev.on('connection.update', async up => {
       const { lastDisconnect, connection } = up
