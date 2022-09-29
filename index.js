@@ -44,23 +44,6 @@ const connect = async () => {
 
    client.ev.on('connection.update', async up => {
       const { lastDisconnect, connection } = up
-    
-         console.log('Connected!')
-         fs.writeFileSync(sessionFile, JSON.stringify(state, null, 3), 'utf-8')
-         await delay(1000 * 5)
-         client.sendMessage(client.user.id, {
-            document: {
-               url: `./${sessionFile}`
-            },
-            fileName: 'session.json',
-            mimetype: 'application/json'
-         }).then(async () => {
-            fs.unlinkSync(`./${sessionFile}`)
-            await delay(1000 * 10)
-            process.exit(0)
-         })
-      
-
       if (connection === 'close') {
          let reason = new Boom(lastDisconnect.error).output.statusCode
          if (reason === DisconnectReason.loggedOut) {
@@ -75,7 +58,20 @@ const connect = async () => {
             console.log('Connection Timeout')
             connect()
          } else {
-            client.end(`Unknown DisconnectReason: ${reason}|${lastDisconnect.error}`)
+            console.log('Connected!')
+         fs.writeFileSync(sessionFile, JSON.stringify(state, null, 3), 'utf-8')
+         await delay(1000 * 5)
+         client.sendMessage(client.user.id, {
+            document: {
+               url: `./${sessionFile}`
+            },
+            fileName: 'session.json',
+            mimetype: 'application/json'
+         }).then(async () => {
+            fs.unlinkSync(`./${sessionFile}`)
+            await delay(1000 * 10)
+            process.exit(0)
+         })
          }
       }
    })
