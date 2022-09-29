@@ -24,7 +24,7 @@ const logger = pino().child({
 global.store = makeInMemoryStore({
    logger
 })
-store.readFromFile(sessionFile)
+// store.readFromFile(sessionFile)
 
 const connect = async () => {
    const {
