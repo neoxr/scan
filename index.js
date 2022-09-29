@@ -19,8 +19,11 @@ const logger = pino().child({
    level: 'silent'
 })
 
+global.store = makeInMemoryStore({ logger })
+store.readFromFile(sessionFile)
+
 const connect = async () => {
-   const { state } = await useMultiFileAuthState(sessionFile, logger)
+   const { state } = await useMultiFileAuthState('session')
    const client = makeWASocket({
       logger: pino({
           level: 'silent'
@@ -39,12 +42,27 @@ const connect = async () => {
       }
    })
    
-   client.store = makeInMemoryStore({ logger })
    client.store.bind(client.ev)
 
-   client.ev.on('connection.update', async up => {
-      const { lastDisconnect, connection } = up
-      if (connection === 'open') {
+   client.ev.on('connection.update', async update => {
+      
+      const { connection, lastDisconnect } = update
+      console.log(update)
+    if (connection === 'connecting') console.log('sabar ngab lagi nyoba menghubungkan!')
+    if (connection === 'close') {
+      let reason = new Boom(lastDisconnect.error).output.statusCode
+      if (reason === DisconnectReason.badSession) { console.log(`Bad Session, reconnecting...`) connect() }
+      else if (reason === DisconnectReason.connectionClosed) { console.log("Connection closed, reconnecting....") connect() }
+      else if (reason === DisconnectReason.connectionLost) { console.log("Connection Lost from Server, reconnecting...") connect() }
+      else if (reason === DisconnectReason.connectionReplaced) { console.log("Connection Replaced, Another New Session Opened, Please Close Current Session First") client.logout() }
+      else if (reason === DisconnectReason.loggedOut) { console.log(`Device Logged Out, Please Scan Again And Run.`) client.logout() }
+      else if (reason === DisconnectReason.restartRequired) { console.log("Restart Required, Restarting...") connect() }
+      else if (reason === DisconnectReason.timedOut) { console.log("Connection TimedOut, Reconnecting...") connect() }
+      else if (reason === DisconnectReason.multideviceMismatch) { console.log("Multi device mismatch, please scan again") client.logout() }
+      else client.end(`Unknown DisconnectReason: ${reason}|${connection}`)
+    }
+    
+    if (update.isOnline) {
       	console.log('Connected!')
          fs.writeFileSync(sessionFile, JSON.stringify(state, null, 3), 'utf-8')
          await delay(1000 * 5)
@@ -60,23 +78,8 @@ const connect = async () => {
             process.exit(0)
          })
       }
-      
-      if (connection === 'close') {
-         let reason = new Boom(lastDisconnect.error).output.statusCode
-         if (reason === DisconnectReason.loggedOut) {
-            console.log('Device logout')
-            client.logout()
-         } else if (reason === DisconnectReason.connectionClosed) {
-            console.log('Connection closed, wait to reconnecting')
-            connect()
-         } else if (reason === DisconnectReason.restartRequired) {
-            connect()
-         } else if (reason === DisconnectReason.timedOut) {
-            console.log('Connection Timeout')
-            connect()
-         } else {
-            
-         }
+    
+    
       }
    })
 }
