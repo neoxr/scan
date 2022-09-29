@@ -1,0 +1,15 @@
+{
+  "name": "Scan QR",
+  "version": "1.0.0",
+  "main": "index.js",
+  "start": "node .",
+  "license": "MIT",
+  "dependencies": {
+    "baileys": "latest",
+    "fs": "0.0.1-security",
+    "human-readable": "^0.2.1",
+    "moment-timezone": "^0.5.34",
+    "pino": "^7.11.0",
+    "qrcode-terminal": "^0.12.0"
+  }
+}
