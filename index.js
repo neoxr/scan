@@ -5,6 +5,7 @@ const {
    default: makeWASocket,
    delay,
    useMultiFileAuthState,
+   makeCacheableSignalKeyStore,
    DisconnectReason,
    msgRetryCounterMap
 } = require('baileys')
