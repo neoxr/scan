@@ -1,6 +1,7 @@
 const pino = require('pino')
 const qrcode = require('qrcode-terminal')
 const fs = require('fs')
+const { Boom } = require('@hapi/boom')
 const {
    default: makeWASocket,
    delay,
