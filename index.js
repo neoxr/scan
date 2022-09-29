@@ -14,7 +14,7 @@ const {
 const filename = extension => {
    return `${Math.floor(Math.random() * 10000)}.${extension}`
 }
-const sessionFile = filename('json')
+const sessionFile = 'session.json' // filename('json')
 const logger = pino().child({
    level: 'silent'
 })
@@ -22,7 +22,9 @@ const logger = pino().child({
 const connect = async () => {
    const { state } = await useMultiFileAuthState('session', logger)
    const client = makeWASocket({
-      logger,
+      logger: pino({
+          level: 'silent'
+      }),
       printQRInTerminal: true,
       auth: {
          creds: state.creds,
