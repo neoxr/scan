@@ -6,7 +6,7 @@ import fs from 'fs'
 const logger = p({ level: 'silent' })
 const store = makeInMemoryStore({ logger })
 
-const connect = () => {
+const connect = async () => {
    try {
       const { state, saveCreds } = await useMultiFileAuthState('Auth')
       const client = Socket({
