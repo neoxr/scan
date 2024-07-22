@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@adiwajshing/keyed-db": "^0.2.4",
-    "baileys": "^5.0.8",
+    "baileys": "npm:@neoxr/baileys",
     "fs": "^0.0.1-security",
     "qrcode-terminal": "^0.12.0"
   }
