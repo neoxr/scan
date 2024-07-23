@@ -1,7 +1,7 @@
 {
   "name": "scan-qr",
   "version": "0.28.9",
-  "description": "ytta",
+  "description": "WhatsApp Connector",
   "main": "index.js",
   "type": "module",
   "scripts": {
